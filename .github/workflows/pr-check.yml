@@ -1,0 +1,26 @@
+name: PR Validation
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate workflow files
+        run: |
+          echo "Validating workflow YAML files..."
+          for f in .github/workflows/*.yml; do
+            echo "Checking $f"
+            python3 -c "import yaml, sys; yaml.safe_load(open('$f'))" && echo "$f is valid" || exit 1
+          done
+
+      - name: Confirm no deployment occurs
+        run: echo "PR check complete — no deployment performed."
